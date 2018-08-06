@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "locale.h": "c",
+        "_mingw.h": "c",
+        "stddef.h": "c",
+        "string.h": "c",
+        "windows.h": "c",
+        "stdlib.h": "c"
+    }
+}
