@@ -141,9 +141,7 @@ long long NumaratikGiris(int size, char *mesaj){
         fflush(stdin);
         for(int i=0; size > i && giris[0] != '\0' && giris[i] != '\n'; i++)
         {
-            if(giris[i] >= 48 && giris[i] <= 57)
-                ;
-            else
+            if(!(giris[i] >= 48 && giris[i] <= 57))
             {
                 flag = 1; 
                 break;
