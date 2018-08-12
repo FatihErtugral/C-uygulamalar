@@ -38,12 +38,12 @@
  *      • Bulunan sonuc d[0] indisine kayıt edilir ve geri değer olarak döndürülür.
  *      
  *
- *      ■ Konsoldan girişlerin numaratik olup olmadığı kontroledilmiştir.
+ *      ■ Konsoldan girişlerin numaratik olup olmadığı kontrol edilmiştir.
  * 
  *      ■ Maximum işlem kapasitesi
  *          
- *          9,999,999,999
- *          9,999,999,999
+ *           9,999,999,999
+ *          -9,999,999,999
  *        x________________
  **/
 
@@ -67,9 +67,9 @@ int main()
 int sBasamak(long long x) //> Verilen rakamın kaç basamaklı olduğunu geri döndürür.
 {
     int i = 1;
-    while (x > 9)
+    while (x > 9 || x < -9)
     {
-        x = (x - x % 10) / 10;
+        x = (x - (x % 10)) / 10;
         i++;
     }
     return i;
@@ -82,25 +82,26 @@ long long toplaDizi(long long *d, int boyut) // Açıklama üst kısımda.
     --boyut;
     while (boyut != 0)
     {
-        if (d[0] < d[boyut]) //> Amaç büyük sayıyı, 0. indise yerleştirmek formülümüz için.
+        if (d[0] < d[boyut]) //>
         {
-            long long temp = d[0];
-            d[0] = d[boyut];
-            d[boyut] = temp;
-            off = sBasamak(d[0]);
+            long long temp;
+            temp      = d[0];
+            d[0]      = d[boyut];
+            d[boyut]  = temp;
+            off       = sBasamak(d[0]);
         }
-        sonuc += (d[0] % 10 + d[boyut] % 10) % 10 * onluKat;
-        d[0] = (d[0] - (d[0] % 10)) / 10;
+        sonuc   += (((d[0] % 10) + (d[boyut] % 10)) % 10) * onluKat;
+        d[0]    = (d[0] - (d[0] % 10)) / 10;
         d[boyut] = (d[boyut] - (d[boyut] % 10)) / 10;
         onluKat *= 10;
         off--;
         if (off == 0) //> Özyineleme işlemi
         {
             onluKat = 1;
-            d[0] = sonuc;
-            sonuc = 0;
+            d[0]    = sonuc;
+            sonuc   = 0;
+            off     = sBasamak(d[0]);
             boyut--;
-            off = sBasamak(d[0]);
         }
     }
     return d[0];
@@ -108,22 +109,22 @@ long long toplaDizi(long long *d, int boyut) // Açıklama üst kısımda.
 /**********************************************************************************/
 void HataliCarp(long long *carpim, long long *carpan)
 {
-    long long sBuyuk = *carpan > *carpim ? *carpan : *carpim; //> Buyuk sayiyi tespit et
-    long long sKucuk = *carpan < *carpim ? *carpan : *carpim; //> Kucuk Sayiyi tespit et
-    int boyut = sBasamak(sKucuk);                             //> Carpilacak en düşük değer
-    long long *dizi = (long long *)malloc(sizeof(long long) * boyut); //> En düşük değer kadar dizi oluştur.
+    int boyut       = sBasamak(*carpan);                              //> Carpanin basamak sayisi kadar dizi oluştur
+    long long *dizi = (long long *)malloc(sizeof(long long) * boyut); //> 
     
     printf("\n\n%20lld\n", *carpim);
     printf("%20lld\n", *carpan);
     printf("%20s\n", "x____________");
     for (int i = boyut - 1; i > -1; i--)
     {
-        dizi[i] = sBuyuk * (sKucuk % 10);
-        sKucuk = (sKucuk - sKucuk % 10) / 10;
+        dizi[i] = *carpim * (*carpan % 10);
+        *carpan = (*carpan - (*carpan % 10)) / 10;
         printf("%20lld\n", dizi[i]);
     }
     printf("%20s\n", "+____________");
     printf("%20lld\n", toplaDizi(dizi, boyut));
+    free(dizi);
+    return ;
 }
 /**********************************************************************************/
 long long NumaratikGiris(int size, char *mesaj){
@@ -139,9 +140,11 @@ long long NumaratikGiris(int size, char *mesaj){
         printf("%s", mesaj);
         fgets(giris, (size+1), stdin);
         fflush(stdin);
+        
         for(int i=0; size > i && giris[0] != '\0' && giris[i] != '\n'; i++)
         {
-            if(!(giris[i] >= 48 && giris[i] <= 57))
+            // 48 - 57 arası ASCII taplosunda rakamları, 45 ise - işaretini temsil eder
+            if(!(giris[i] >= 48 && giris[i] <= 57 || giris[i] == 45))	
             {
                 flag = 1; 
                 break;
@@ -155,6 +158,7 @@ long long NumaratikGiris(int size, char *mesaj){
             free(giris); fflush(stdin);
         }
     }while(flag == 1);
-    rvalue = atoll(giris);
+    rvalue = atoll(giris); // Dizi içindeki karakter türünden rakamlar long long int türüne dönüştürülür.
+    free(giris);
     return rvalue;
 }
